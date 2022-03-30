@@ -4,11 +4,11 @@ import java.awt.Point;
 import javax.swing.ImageIcon;
 
 import UMLWindow.TheWindow;
-import UMLWindow.UMLObjects.UMLObject_Usecase;
+import UMLWindow.UMLObjectsContainer;
 
 public class UMLAction_Usecase extends UMLActionCore {
-    public UMLAction_Usecase(ImageIcon ii1, ImageIcon ii2, TheWindow tw, int ssIdx_) {
-        super(ii1, ii2, tw, ssIdx_);
+    public UMLAction_Usecase(ImageIcon ii1, ImageIcon ii2, TheWindow tw, UMLObjectsContainer umlocter_, int ssIdx_) {
+        super(ii1, ii2, tw, umlocter_, ssIdx_);
     }
 
     @Override
@@ -18,6 +18,6 @@ public class UMLAction_Usecase extends UMLActionCore {
 
     @Override
     public void clickedEvent(Point p) {
-        this.ptw.umlc.umloc.add(new UMLObject_Usecase("", p, this.ptw.umlc.nextDepth++, 50, 100));
+        this.umlocter.clickedEvent_Usecase(p);
     }
 }

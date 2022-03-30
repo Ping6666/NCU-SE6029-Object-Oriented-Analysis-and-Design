@@ -13,12 +13,9 @@ import javax.swing.ImageIcon;
 
 import UMLWindow.UMLActions.*;
 import UMLWindow.UMLCanvases.UMLCanvas;
-import UMLWindow.UMLObjects.UMLComponent;
 
 /** controll the window level */
 public class TheWindow {
-    public UMLComponent.SelectStatus ss;
-
     private JFrame jf;
     private JPanel jp;
     private JMenuBar jmb;
@@ -34,10 +31,12 @@ public class TheWindow {
 
     /** string array for JLabel */
     private String[][] jl_sa;
-    // private UMLActions jl[];
     private UMLActionCore jl[];
 
-    public UMLCanvas umlc;
+    private UMLCanvas umlc;
+    private UMLObjectsContainer umlocter;
+    /** selection status */
+    private int ssIdx;
 
     public TheWindow() {
         this.initVariables();
@@ -53,17 +52,17 @@ public class TheWindow {
         };
         this.al0 = new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setGroup();
+                setGroupWorkHouse();
             }
         };
         this.al1 = new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                setUnGroup();
+                setUnGroupWorkHouse();
             }
         };
         this.al2 = new ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nameWindow();
+                initNameWindowWorkHouse();
             }
         };
         this.jl_sa = new String[][] {
@@ -74,7 +73,8 @@ public class TheWindow {
                 { "../pic/5.class.png", "../pic/5.class.b.png" },
                 { "../pic/6.usecase.png", "../pic/6.usecase.b.png" }
         };
-        this.ss = UMLComponent.SelectStatus.ss_select;
+        this.ssIdx = 0;
+        this.umlocter = new UMLObjectsContainer();
     }
 
     private void initTheWindow() {
@@ -104,29 +104,29 @@ public class TheWindow {
         this.jl = new UMLActionCore[this.jl_sa.length];
         this.jl[0] = (UMLActionCore) new UMLAction_Select(
                 new ImageIcon(this.jl_sa[0][0]),
-                new ImageIcon(this.jl_sa[0][1]), this, 0);
+                new ImageIcon(this.jl_sa[0][1]), this, this.umlocter, 0);
         this.jl[1] = (UMLActionCore) new UMLAction_Line_Association(
                 new ImageIcon(this.jl_sa[1][0]),
-                new ImageIcon(this.jl_sa[1][1]), this, 1);
+                new ImageIcon(this.jl_sa[1][1]), this, this.umlocter, 1);
         this.jl[2] = (UMLActionCore) new UMLAction_Line_Generalization(
                 new ImageIcon(this.jl_sa[2][0]),
-                new ImageIcon(this.jl_sa[2][1]), this, 2);
+                new ImageIcon(this.jl_sa[2][1]), this, this.umlocter, 2);
         this.jl[3] = (UMLActionCore) new UMLAction_Line_Composition(
                 new ImageIcon(this.jl_sa[3][0]),
-                new ImageIcon(this.jl_sa[3][1]), this, 3);
+                new ImageIcon(this.jl_sa[3][1]), this, this.umlocter, 3);
         this.jl[4] = (UMLActionCore) new UMLAction_Class(
                 new ImageIcon(this.jl_sa[4][0]),
-                new ImageIcon(this.jl_sa[4][1]), this, 4);
+                new ImageIcon(this.jl_sa[4][1]), this, this.umlocter, 4);
         this.jl[5] = (UMLActionCore) new UMLAction_Usecase(
                 new ImageIcon(this.jl_sa[5][0]),
-                new ImageIcon(this.jl_sa[5][1]), this, 5);
+                new ImageIcon(this.jl_sa[5][1]), this, this.umlocter, 5);
         for (int i = 0; i < this.jl_sa.length; i++) {
             this.jp.add(this.jl[i].getJLabel());
         }
         this.jf.add(this.jp, BorderLayout.WEST);
 
         // CENTER part of the window
-        this.umlc = new UMLCanvas(this);
+        this.umlc = new UMLCanvas(this, this.umlocter);
         this.jf.add(this.umlc, BorderLayout.CENTER);
 
         this.jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // close the window and exit program
@@ -136,48 +136,44 @@ public class TheWindow {
     }
 
     public void clickedEventWorkHouse(Point p) {
-        this.jl[this.ss.ordinal()].clickedEvent(p);
+        this.jl[this.ssIdx].clickedEvent(p);
     }
 
     public void draggedEventWorkHouse(Point p) {
-        this.jl[this.ss.ordinal()].draggedEvent(p);
+        this.jl[this.ssIdx].draggedEvent(p);
     }
 
     public void pressedEventWorkHouse(Point p) {
-        this.jl[this.ss.ordinal()].pressedEvent(p);
+        this.jl[this.ssIdx].pressedEvent(p);
     }
 
     public void releasedEventWorkHouse(Point p) {
-        this.jl[this.ss.ordinal()].releasedEvent(p);
+        this.jl[this.ssIdx].releasedEvent(p);
+    }
+
+    private void setGroupWorkHouse() {
+        this.umlocter.setGroup();
+        this.umlc.repaintAll();
+    }
+
+    private void setUnGroupWorkHouse() {
+        this.umlocter.setUnGroup();
+        this.umlc.repaintAll();
+    }
+
+    private void initNameWindowWorkHouse() {
+        this.umlocter.initNameWindow(this.umlc);
     }
 
     public void changeSS(int ssIdx_) {
-        manipulateSS(this.ss, false);
-        this.ss = UMLComponent.SelectStatus.values()[ssIdx_];
-        manipulateSS(this.ss, true);
-        System.out.println("SelectStatus: " + this.ss);
+        manipulateSS(this.ssIdx, false);
+        this.ssIdx = ssIdx_;
+        manipulateSS(this.ssIdx, true);
+        System.out.println("SelectStatus: " + this.jl[ssIdx_].iiDescription);
     }
 
-    private void manipulateSS(UMLComponent.SelectStatus ss_, boolean selection) {
+    private void manipulateSS(int ssIdx_, boolean selection) {
         // this may be a dangerous movement
-        this.jl[ss_.ordinal()].changeII(selection);
-    }
-
-    private void setGroup() {
-        if (this.umlc.curr_select_umloc.size() > 1) {
-            this.umlc.manipulateGroup();
-        }
-    }
-
-    private void setUnGroup() {
-        if (this.umlc.curr_select_umloc.size() == 1) {
-            this.umlc.manipulateUnGroup(this.umlc.curr_select_umloc.get(0));
-        }
-    }
-
-    private void nameWindow() {
-        if (this.umlc.curr_select_umloc.size() == 1) {
-            new NameWindow(this.umlc, this.umlc.curr_select_umloc.get(0));
-        }
+        this.jl[ssIdx_].changeII(selection);
     }
 }

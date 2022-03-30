@@ -10,14 +10,14 @@ import java.awt.image.AffineTransformOp;
 import javax.imageio.ImageIO;
 
 /** the base class of umll, typically is basic line */
-public class UMLLine {
+public class UMLObject_Line {
     protected UMLObject umlo;
     protected int targetSide;
 
     /** BufferedImage */
     protected BufferedImage bi;
 
-    public UMLLine(UMLObject umlo_, int targetSide_, String fileName) {
+    public UMLObject_Line(UMLObject umlo_, int targetSide_, String fileName) {
         this.umlo = umlo_;
         this.targetSide = targetSide_;
         this.bi = null;

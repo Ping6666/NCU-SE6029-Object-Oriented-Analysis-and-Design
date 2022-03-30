@@ -4,11 +4,11 @@ import java.awt.Point;
 import javax.swing.ImageIcon;
 
 import UMLWindow.TheWindow;
-import UMLWindow.UMLObjects.UMLObject_Class;
+import UMLWindow.UMLObjectsContainer;
 
 public class UMLAction_Class extends UMLActionCore {
-    public UMLAction_Class(ImageIcon ii1, ImageIcon ii2, TheWindow tw, int ssIdx_) {
-        super(ii1, ii2, tw, ssIdx_);
+    public UMLAction_Class(ImageIcon ii1, ImageIcon ii2, TheWindow tw, UMLObjectsContainer umlocter_, int ssIdx_) {
+        super(ii1, ii2, tw, umlocter_, ssIdx_);
     }
 
     @Override
@@ -18,6 +18,6 @@ public class UMLAction_Class extends UMLActionCore {
 
     @Override
     public void clickedEvent(Point p) {
-        this.ptw.umlc.umloc.add(new UMLObject_Class("", p, this.ptw.umlc.nextDepth++, 30, 100));
+        this.umlocter.clickedEvent_Class(p);
     }
 }

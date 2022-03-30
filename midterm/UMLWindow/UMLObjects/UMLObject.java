@@ -11,7 +11,7 @@ public abstract class UMLObject extends UMLObjectCore {
     public int lastSelectedSide;
 
     // the advanced member
-    public UMLLine umll[];
+    public UMLObject_Line umlol[];
     /** string array for UMLLine */
     public String[] umll_sa;
 
@@ -22,9 +22,9 @@ public abstract class UMLObject extends UMLObjectCore {
         this.width = width_;
         this.selectBoxLength = 10;
         this.lastSelectedSide = -1;
-        this.umll = new UMLLine[4];
+        this.umlol = new UMLObject_Line[4];
         for (int i = 0; i < 4; i++) {
-            this.umll[i] = null;
+            this.umlol[i] = null;
         }
         this.umll_sa = new String[] {
                 "../pic/2.association.base.png",
@@ -47,11 +47,11 @@ public abstract class UMLObject extends UMLObjectCore {
         super.drawAdvancedWorkhouse(g);
         // the 4-line if there is
         for (int i = 0; i < 4; i++) {
-            if (this.umll[i] != null && this.umll[i].umlo != null) {
+            if (this.umlol[i] != null && this.umlol[i].umlo != null) {
                 Point start_p = this.getSelectBoxBaseCoord(i);
-                Point end_p = this.umll[i].umlo.getSelectBoxBaseCoord(this.umll[i].targetSide);
+                Point end_p = this.umlol[i].umlo.getSelectBoxBaseCoord(this.umlol[i].targetSide);
                 if (start_p != null && end_p != null) {
-                    this.umll[i].drawLineWorkhouse(g, new Point(start_p.x, start_p.y), new Point(end_p.x, end_p.y));
+                    this.umlol[i].drawLineWorkhouse(g, new Point(start_p.x, start_p.y), new Point(end_p.x, end_p.y));
                 }
             }
         }

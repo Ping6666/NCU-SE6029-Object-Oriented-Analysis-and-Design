@@ -18,10 +18,9 @@ public class NameWindow {
     private JButton jb1, jb2;
     private ActionListener al1, al2;
 
-    /** the only canvas */
-    private UMLCanvas umlc;
     /** the object umloc or composite which was been selected */
     private UMLObjectCore umloc;
+    private UMLCanvas umlc;
 
     public NameWindow(UMLCanvas umlc_, UMLObjectCore umloc_) {
         this.umlc = umlc_;
