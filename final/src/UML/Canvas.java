@@ -159,7 +159,7 @@ public class Canvas extends JPanel {
         }
 
         for (int i = 0; i < this.currSelectedShapeCores.size(); i++) {
-            if (this.shapeCores.get(i) == tmpShapeCore) {
+            if (this.currSelectedShapeCores.get(i) == tmpShapeCore) {
                 return i;
             }
         }
@@ -168,6 +168,11 @@ public class Canvas extends JPanel {
 
     private HashSet<ShapeCore> getGroupHashSet(ShapeCore groupShapeCore) {
         HashSet<ShapeCore> hashSetShapeCores = new HashSet<>();
+        if (groupShapeCore == null) {
+            return hashSetShapeCores;
+        }
+
+        /* get object under same group */
         ArrayList<ShapeCore> tmpShapeCores = groupShapeCore.getGroupShapeCores();
         if (tmpShapeCores != null) {
             for (ShapeCore tmpShapeCore : tmpShapeCores) {
@@ -179,7 +184,8 @@ public class Canvas extends JPanel {
     }
 
     // TODO fix some BUG
-    // may be can change to object clone()
+    // when only select on the group base object will got BUG
+    // but use multi. select on all member in the group base object can work well
     /* this method is quite dangerous and high time complexity */
     private ArrayList<ShapeCore> copyShapeCoresWorkHouse() {
         System.out.println("\tStart copy sequence.");
@@ -197,22 +203,26 @@ public class Canvas extends JPanel {
             return null;
         }
 
-        /* fix some BUG when copy on line object */
-        for (ShapeCore tmpShapeCore : this.currSelectedShapeCores) {
-            if (tmpShapeCore.rectangle == null) {
-                this.currSelectedShapeCores.add(tmpShapeCore.getPort(Side.FrontPort).getObjectBase());
-                this.currSelectedShapeCores.add(tmpShapeCore.getPort(Side.BackPort).getObjectBase());
-            }
-        }
+        HashSet<ShapeCore> hashSetShapeCores = new HashSet<ShapeCore>();
 
         /* add valid obj. and the group obj. in it */
-        HashSet<ShapeCore> hashSetShapeCores = new HashSet<ShapeCore>();
         for (ShapeCore tmpShapeCore : this.currSelectedShapeCores) {
             hashSetShapeCores.add(tmpShapeCore);
             hashSetShapeCores.addAll(this.getGroupHashSet(tmpShapeCore));
+
+            /* fix some BUG when copy on line object */
+            if (tmpShapeCore.rectangle == null) {
+                ShapeCore frontPortShapeCore = tmpShapeCore.getPort(Side.FrontPort).getObjectBase();
+                hashSetShapeCores.add(frontPortShapeCore);
+                hashSetShapeCores.addAll(this.getGroupHashSet(frontPortShapeCore));
+
+                ShapeCore backPortShapeCore = tmpShapeCore.getPort(Side.BackPort).getObjectBase();
+                hashSetShapeCores.add(backPortShapeCore);
+                hashSetShapeCores.addAll(this.getGroupHashSet(backPortShapeCore));
+            }
         }
 
-        int length = this.currSelectedShapeCores.size();
+        int length = hashSetShapeCores.size();
 
         /* adjust valid obj. order */
         this.currSelectedShapeCores.clear();
@@ -229,7 +239,6 @@ public class Canvas extends JPanel {
         } else {
             System.out.println("\tCopy successful!!!");
         }
-
         return copyShapeCores;
     }
 
@@ -240,7 +249,8 @@ public class Canvas extends JPanel {
         for (ShapeCore tmpShapeCore : tmpShapeCores) {
             this.shapeCores.remove(tmpShapeCore);
         }
-        this.resetSelection();
+        this.repaintWorkHouse();
+        // this.resetSelection();
     }
 
     public JSONObject cutShapeCores() {
@@ -262,6 +272,7 @@ public class Canvas extends JPanel {
         for (ShapeCore tmpPasteShapeCore : tmpPasteShapeCores) {
             this.addObject(tmpPasteShapeCore);
         }
+        this.resetSelection();
         this.repaintWorkHouse();
     }
 
